@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<style type='text/css'>
+canvas {
+  border: 1px solid #aaa;
+}
+</style>
+
+<script type="text/javascript" src="jquery-1.4.3.min.js"></script>
+<script type="text/javascript">
+var context;
+var width = 500;
+var height = 500;
+
+var turn = 0; //index
+var scores = [];
+var choices = [];
+var levels = [];
+var cursor = {x: 0, y:0};
+
+function setBackground() {
+	context.clearRect(0, 0, width, height);
+	context.fillStyle = "black";
+	context.fillRect(0,0,width,height);
+}
+
+
+function clickAt(p) {
+	
+}
+
+
+function draw() {
+	setBackground();
+}
+
+function getTime() {
+  return new Date().getTime() / 1000;
+}
+
+function elapsedTime() {
+  return getTime() - start;
+}
+
+$(document).ready(function() {
+  start = getTime();
+
+  var canvas = $('#canvas');
+  context = canvas.get(0).getContext('2d');
+
+	canvas.click(function(e) {
+    clickAt(cursor);
+	});
+
+  canvas.mousemove(function(e) {
+    var mousex = e.pageX - canvas.offset().left;
+    var mousey = e.pageY - canvas.offset().top;
+
+    mousex -= width/2;
+    mousey -= width/2;
+
+	  cursor.x = mousey //* Math.cos(angle) - mouse.y * Math.sin(angle) + width/2;
+    cursor.y = mousey //* Math.sin(angle) + mouse.y * Math.cos(angle) + height/2;
+  });
+
+  setInterval(draw, 10);
+});
+
+</script>
+</head>
+<body>
+<canvas id='canvas' width=500 height=500></canvas>
+</body>
+</html>
