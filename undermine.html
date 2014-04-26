@@ -51,6 +51,14 @@ function drawLevels() {
 
 	for (var i = 0; i < levels.length; i++) {
 		drawRect(dx - (w * i * .5), dy, w * (i + 1), h, levels[i]);
+		context.fillStyle = "black";
+
+		context.font         = 'bold 30px courier-new';
+		context.textBaseline = 'top';
+
+		context.strokeText('Hello world!', 0, 50);
+
+	  context.fillText(i + 1, dx + 5, dy);
 		dy+= h;
 	}
 }
