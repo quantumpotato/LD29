@@ -16,8 +16,21 @@ var height = 500;
 var turn = 0; //index
 var scores = [];
 var choices = [];
-var levels = [];
+var levels = ["purple", "blue", "green", "yellow", "orange", "red"];
 var cursor = {x: 0, y:0};
+
+function drawCircle(p,colour,radius) {
+	context.fillStyle = colour;
+	context.beginPath();
+	context.arc(p.x,p.y,radius,0,Math.PI*2,true);
+	context.closePath();
+	context.fill();
+}
+
+function drawRect(x,y,w,h, colour) {
+	context.fillStyle = colour;
+	context.fillRect(x,y,w,h);
+}
 
 function setBackground() {
 	context.clearRect(0, 0, width, height);
@@ -30,9 +43,21 @@ function clickAt(p) {
 	
 }
 
+function drawLevels() {
+	var dx = width * .33;
+	var dy = height * .67;
+	var w = 25;
+	var h = 25;
+
+	for (var i = 0; i < levels.length; i++) {
+		drawRect(dx - (w * i * .5), dy, w * (i + 1), h, levels[i]);
+		dy+= h;
+	}
+}
 
 function draw() {
 	setBackground();
+	drawLevels();
 }
 
 function getTime() {
