@@ -64,30 +64,51 @@ function drawLevels() {
 		dy+= h;
 	}
 
+	if (choices[0] == -1 && turn == 0) {
+    drawRect(dx - 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "green");
+    msg = "Player 1 selects depth of influence.";
+	} else if (choices[1] == -1 && turn == 1) {
+		drawRect(dx + 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "red");	
+		msg = "Player 2 selects depth of influence.";
+	} else {
+		msg = "Move cursor here.";
+	}
 
-		if (choices[0] == -1 && turn == 0) {
-      drawRect(dx - 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "green");
-		} else if (choices[1] == -1 && turn == 1) {
-			drawRect(dx + 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "red");	
-		}
+	showMsg(msg);
 
 	// if (choices[0] == -1) {
 	// 	drawRect(dx - 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "green");
  //  }
 }
 
+function showMsg(msg) {
+	context.fillStyle = "white";	
+	context.font         = '28px courier-new';
+	context.textBaseline = 'center';
+
+	context.fillText(msg, 90, 400);
+}
+
 function clearChoices() {
 	choices = [-1, -1];
 }
 
-function drawUndermineLine() {
+function drawUndermine() {
+	context.fillStyle = "white";
+
+	context.font         = 'bold 45px times-new-roman';
+	context.textBaseline = 'center';
+
+  context.fillText("UNDERMINE", 100, 350);
+
 	drawRect(0,320,500,2, "white");
 }
 
 function draw() {
 	setBackground();
 	drawLevels();
-	drawUndermineLine();
+	
+	drawUndermine();
 }
 
 function getTime() {
