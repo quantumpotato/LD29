@@ -14,12 +14,13 @@ var width = 500;
 var height = 500;
 
 var turn = 0; //index
-var scores = [];
+var scores = [0, 0];
 var choices = [];
 var levels = ["purple", "blue", "green", "yellow", "orange", "red"];
 var cursor = {x: 0, y:0};
 
 function drawCircle(p,colour,radius) {
+	console.log("p" + radius);
 	context.fillStyle = colour;
 	context.beginPath();
 	context.arc(p.x,p.y,radius,0,Math.PI*2,true);
@@ -38,34 +39,55 @@ function setBackground() {
 	context.fillRect(0,0,width,height);
 }
 
-
-function clickAt(p) {
-	
-}
+var mouseSelection = 0;
 
 function drawLevels() {
 	var dx = width * .33;
-	var dy = height * .67;
+	var dy = height * .33;
 	var w = 25;
 	var h = 25;
 
 	for (var i = 0; i < levels.length; i++) {
-		drawRect(dx - (w * i * .5), dy, w * (i + 1), h, levels[i]);
+		if (cursor.y > dy) {
+			mouseSelection = i;
+		}
+
+		levelX = dx - (w * i * .5);
+		levelW = w * (i + 1);
+		drawRect(levelX, dy, levelW, h, levels[i]);
 		context.fillStyle = "black";
 
 		context.font         = 'bold 30px courier-new';
 		context.textBaseline = 'top';
 
-		context.strokeText('Hello world!', 0, 50);
-
 	  context.fillText(i + 1, dx + 5, dy);
 		dy+= h;
 	}
+
+
+		if (choices[0] == -1 && turn == 0) {
+      drawRect(dx - 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "green");
+		} else if (choices[1] == -1 && turn == 1) {
+			drawRect(dx + 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "red");	
+		}
+
+	// if (choices[0] == -1) {
+	// 	drawRect(dx - 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "green");
+ //  }
+}
+
+function clearChoices() {
+	choices = [-1, -1];
+}
+
+function drawUndermineLine() {
+	drawRect(0,320,500,2, "white");
 }
 
 function draw() {
 	setBackground();
 	drawLevels();
+	drawUndermineLine();
 }
 
 function getTime() {
@@ -76,6 +98,28 @@ function elapsedTime() {
   return getTime() - start;
 }
 
+function undermine() {
+	if (choices[0] == 1 && choices[1] == 6) {
+		scores[0] += 1;
+	} else if (choices[1] == 1 && choices[0] == 6) {
+		scores[1] += 1;
+	} else {
+		if (choices[0] - choices[1] == 2) {
+			scores[0] += choices[1];
+		} else if (choices[1] - choices[0] == 2) {
+			scores[1] += choices[0];
+		} else {
+			scores[0] += choices[0];
+			scores[1] += choices[1];
+		}
+	}
+
+	console.log("Score P1: " + scores[0]);
+  console.log("Score P2: " + scores[1]);
+
+	clearChoices();
+}
+
 $(document).ready(function() {
   start = getTime();
 
@@ -83,20 +127,33 @@ $(document).ready(function() {
   context = canvas.get(0).getContext('2d');
 
 	canvas.click(function(e) {
-    clickAt(cursor);
+    cursor.x = e.pageX;
+    cursor.y = e.pageY;
+
+		choices[turn] = mouseSelection + 1;
+
+		if (turn == 1 && choices[1] > -1) {
+			undermine();
+			turn = Math.abs(1 - turn);
+		} else {
+
+		}
+
 	});
 
   canvas.mousemove(function(e) {
-    var mousex = e.pageX - canvas.offset().left;
-    var mousey = e.pageY - canvas.offset().top;
+	  cursor.x = e.pageX;
+    cursor.y = e.pageY;
 
-    mousex -= width/2;
-    mousey -= width/2;
-
-	  cursor.x = mousey //* Math.cos(angle) - mouse.y * Math.sin(angle) + width/2;
-    cursor.y = mousey //* Math.sin(angle) + mouse.y * Math.cos(angle) + height/2;
+    if (cursor.y > 320) {
+    	if (choices[turn] > -1) {
+    		turn = Math.abs(1 - turn);
+    	}
+    }
   });
 
+   clearChoices();
+   console.log(choices);
   setInterval(draw, 10);
 });
 
