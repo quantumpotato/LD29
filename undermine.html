@@ -19,15 +19,6 @@ var choices = [];
 var levels = ["purple", "blue", "green", "yellow", "orange", "red"];
 var cursor = {x: 0, y:0};
 
-function drawCircle(p,colour,radius) {
-	console.log("p" + radius);
-	context.fillStyle = colour;
-	context.beginPath();
-	context.arc(p.x,p.y,radius,0,Math.PI*2,true);
-	context.closePath();
-	context.fill();
-}
-
 function drawRect(x,y,w,h, colour) {
 	context.fillStyle = colour;
 	context.fillRect(x,y,w,h);
@@ -75,10 +66,6 @@ function drawLevels() {
 	}
 
 	showMsg(msg);
-
-	// if (choices[0] == -1) {
-	// 	drawRect(dx - 100, (height * .33) + (25 * mouseSelection) + 12.5, 30, 2, "green");
- //  }
 }
 
 function showMsg(msg) {
@@ -87,6 +74,14 @@ function showMsg(msg) {
 	context.textBaseline = 'center';
 
 	context.fillText(msg, 90, 400);
+}
+
+function showResult(r) {
+	context.fillStyle = r.c;
+	context.font         = '28px courier-new';
+	context.textBaseline = 'center';
+
+	context.fillText(r.r, 90, 430);
 }
 
 function clearChoices() {
@@ -104,12 +99,43 @@ function drawUndermine() {
 	drawRect(0,320,500,2, "white");
 }
 
+function showInstructions() {
+	context.fillStyle = "white";	
+	context.font         = '14px courier-new';
+	context.textBaseline = 'center';
+
+	context.fillText("Score 25 points with deep influence", 50, 50);
+	context.fillText("Undermine your rival from 2 levels below", 50, 75);
+	context.fillText("Prevent level 6 from scoring by going on top", 50, 100);
+}
+
+var result = "";
+
+function showScores() {
+	context.fillStyle = "green";	
+	context.font         = '14px courier-new';
+	context.textBaseline = 'center';
+
+	context.fillText("Player 1: " + scores[0], 400, 200);
+	context.fillStyle = "red";	
+	context.fillText("Player 2: " + scores[1], 400, 230);
+}
+
 function draw() {
 	setBackground();
 	drawLevels();
-	
+		
 	drawUndermine();
 	showInstructions();
+	showScores();
+
+	if (choices[0] > -1 && choices[1] > -1) {
+		//showMsg("Move cursor here.");
+	}
+
+	if (result) {
+		showResult(result);
+	}
 }
 
 function getTime() {
@@ -123,23 +149,31 @@ function elapsedTime() {
 function undermine() {
 	if (choices[0] == 1 && choices[1] == 6) {
 		scores[0] += 1;
+		result = {"r" : "Player 1 scores 1 from the top.", "c" : "green"};
 	} else if (choices[1] == 1 && choices[0] == 6) {
 		scores[1] += 1;
+		result =  {"r" : "Player 2 scores 1 from the top.", "c" : "green"};
 	} else {
 		if (choices[0] - choices[1] == 2) {
 			scores[0] += choices[1];
+			result = {"r" : "Player 1 undermines for +" + choices[1] + "!" , "c":"green"};
 		} else if (choices[1] - choices[0] == 2) {
 			scores[1] += choices[0];
+			result = {"r" : "Player 2 undermines for +" + choices[0] + "!" , "c" : "red"};
 		} else {
 			scores[0] += choices[0];
 			scores[1] += choices[1];
+			result = {"r" : "Both players influence the structure.", "c" :"white"};
 		}
 	}
 
-	console.log("Score P1: " + scores[0]);
-  console.log("Score P2: " + scores[1]);
-
-	clearChoices();
+	if (scores[0] > 25 && scores[0] > scores[1]) {
+		result = {"r" : "Player 1 wins!", "c" :"green"};
+    scores = [0,0];
+	} else if (scores[1] > 25 && scores[1] > scores[0]) {
+		result = {"r" :"Player 2 wins!", "c" :"green"};
+		scores = [0,0];
+	}
 }
 
 $(document).ready(function() {
@@ -157,6 +191,7 @@ $(document).ready(function() {
 		if (turn == 1 && choices[1] > -1) {
 			undermine();
 			turn = Math.abs(1 - turn);
+			clearChoices();
 		} else {
 
 		}
@@ -170,12 +205,14 @@ $(document).ready(function() {
     if (cursor.y > 320) {
     	if (choices[turn] > -1) {
     		turn = Math.abs(1 - turn);
+    	} else if (choices[0] > -1 && choices[1] > -1) {
+    		turn = Math.abs(1 - turn);
+    		clearChoices();
     	}
     }
   });
 
    clearChoices();
-   console.log(choices);
   setInterval(draw, 10);
   alert("Find a second player! \nYou two will subvert each other for control over the superstructure organism!");
 });
